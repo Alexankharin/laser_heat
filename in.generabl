@@ -1,0 +1,47 @@
+
+units metal
+atom_style atomic
+atom_modify map array
+dimension       3
+boundary        p p f
+ 
+lattice  diamond 5.43
+region 1 block 0 100 0 100 1 50 units lattice
+region 3 cylinder z 50.0 50.0 20.0 0 50 units lattice 
+region centerslice block 48 50 0 100 1 100 units lattice
+region todump block 0 100 0 100 52 100 units lattice
+ 
+read_data microporSi50percent_100100100.csv
+ 
+group allatoms type 1
+group centeratoms1 region 3
+variable Nn equal count(all,todump)
+mass 1 28.0
+pair_style tersoff 
+pair_coeff * * Si.tersoff  Si
+neighbor 0.5 bin
+neigh_modify every 1 delay 1 check yes 
+ 
+thermo 10
+thermo_modify lost ignore flush yes
+velocity allatoms create 300 12345
+fix 2 all nve
+fix 3 all ave/time 1 1 1 v_Nn file NPs_flux_output
+compute coord all coord/atom cutoff 2.6
+ 
+dump  8  all  movie  2  moviename.mpg  c_coord  type  zoom  1.0  adiam  2.2  axes  yes  0.8  0.02  view  60  -30  size  2048  2048
+dump  9  all  movie  2  flatmoviename.mpg  c_coord  type  zoom  1.6  adiam  2.2  axes  yes  0.8  0.02  view  90  0  size  2048  2048
+dump  12  all  movie  2 slicemoviename.mpg  c_coord  type  zoom  1.0  adiam  2.2  axes  yes  0.8  0.02  view  60  -30  size  2048  2048
+dump  13  all  movie  2 flatslicemoviename.mpg  c_coord  type  zoom  1.6  adiam  2.2  axes  yes  0.8  0.02  view  90  0  size  2048  2048
+
+dump_modify 8 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green
+dump_modify 9 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green
+dump_modify 12 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green region centerslice
+dump_modify 13 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green region centerslice
+run 10 
+velocity centeratoms1 create 1 12345
+variable vxprof atom vx*sqrt((1730000.0*(-99989189.82283658/(0.00010810177163373556-exp(0.173*(5.43*100-z))))+1.8703628388000984e-06*(-99989189.82283658/(0.00010810177163373556-exp(0.173*(5.43*100-z))))*(-99989189.82283658/(0.00010810177163373556-exp(0.173*(5.43*100-z)))))*1e-09)
+variable vyprof atom vy*sqrt((1730000.0*(-99989189.82283658/(0.00010810177163373556-exp(0.173*(5.43*100-z))))+1.8703628388000984e-06*(-99989189.82283658/(0.00010810177163373556-exp(0.173*(5.43*100-z))))*(-99989189.82283658/(0.00010810177163373556-exp(0.173*(5.43*100-z)))))*1e-09)
+variable vzprof atom vz*sqrt((1730000.0*(-99989189.82283658/(0.00010810177163373556-exp(0.173*(5.43*100-z))))+1.8703628388000984e-06*(-99989189.82283658/(0.00010810177163373556-exp(0.173*(5.43*100-z))))*(-99989189.82283658/(0.00010810177163373556-exp(0.173*(5.43*100-z)))))*1e-09)
+velocity centeratoms1 set v_vxprof v_vyprof v_vzprof
+run 100

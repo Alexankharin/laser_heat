@@ -1,0 +1,72 @@
+LAMMPS (3 Mar 2020)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:94)
+  using 1 OpenMP thread(s) per MPI task
+
+    units metal
+    atom_style atomic
+    atom_modify map array
+    dimension       3
+    boundary        p p f
+     
+    lattice  diamond 5.43
+Lattice spacing in x,y,z = 5.43 5.43 5.43
+    region 1 block 0 10 0 10 1 50 units lattice
+    region 3 cylinder z 5.0 5.0 2.0 0 50 units lattice 
+    region centerslice block 3 5 0 10 1 100 units lattice
+    region todump block 0 10 0 10 52 100 units lattice
+     
+        read_data microporSi50percent_1010100.csv
+  orthogonal box = (0 0 0) to (54.3 54.3 543)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  19699 atoms
+  read_data CPU = 0.0553367 secs
+         
+    group allatoms type 1
+19699 atoms in group allatoms
+    group centeratoms1 region 3
+2246 atoms in group centeratoms1
+    variable Nn equal count(all,todump)
+    mass 1 28.0
+    pair_style tersoff 
+    pair_coeff * * Si.tersoff  Si
+Reading potential file Si.tersoff with DATE: 2007-10-25
+    neighbor 0.5 bin
+    neigh_modify every 1 delay 1 check yes 
+     
+    thermo 10
+    thermo_modify lost ignore flush yes
+    velocity allatoms create 300 12345
+    fix 2 all nve
+    fix 3 all ave/time 1 1 1 v_Nn file outputs/NPs_flux_output300nm1Jcm210fs0.5por10nmsize
+    compute coord all coord/atom cutoff 2.6
+     
+    dump  8  all  movie  2  outputs/3d300nm1Jcm210fs0.5por10nmsize.mpg  c_coord  type  zoom  1.0  adiam  2.2  axes  yes  0.8  0.02  view  60  -30  size  2048  2048
+    dump  9  all  movie  2  outputs/flat300nm1Jcm210fs0.5por10nmsize.mpg  c_coord  type  zoom  1.6  adiam  2.2  axes  yes  0.8  0.02  view  90  0  size  2048  2048
+    dump  12  all  movie  2 outputs/slice300nm1Jcm210fs0.5por10nmsize.mpg  c_coord  type  zoom  1.0  adiam  2.2  axes  yes  0.8  0.02  view  60  -30  size  2048  2048
+    dump  13  all  movie  2 outputs/flatslice300nm1Jcm210fs0.5por10nmsize.mpg  c_coord  type  zoom  1.6  adiam  2.2  axes  yes  0.8  0.02  view  90  0  size  2048  2048
+
+    dump_modify 8 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green
+    dump_modify 9 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green
+    dump_modify 12 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green region centerslice
+    dump_modify 13 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green region centerslice
+    run 100 
+Neighbor list info ...
+  update every 1 steps, delay 1 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 3.7
+  ghost atom cutoff = 3.7
+  binsize = 1.85, bins = 30 30 294
+  2 neighbor lists, perpetual/occasional/extra = 1 1 0
+  (1) pair tersoff, perpetual
+      attributes: full, newton on
+      pair build: full/bin/atomonly
+      stencil: full/bin/3d
+      bin: standard
+  (2) compute coord/atom, occasional, copy from (1)
+      attributes: full, newton on
+      pair build: copy
+      stencil: none
+      bin: none
+ERROR on proc 0: Support for writing movies not included (src/dump_movie.cpp:52)
+Last command:     run 100 

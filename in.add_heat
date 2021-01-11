@@ -1,0 +1,45 @@
+units metal
+    atom_style atomic
+    atom_modify map array
+    dimension       3
+    boundary        p p f
+     
+    lattice  diamond 5.43
+    region 1 block 0 10 0 10 1 50 units lattice
+    region 3 cylinder z 5.0 5.0 2.0 0 50 units lattice 
+    region centerslice block 3 5 0 10 1 100 units lattice
+    region todump block 0 10 0 10 52 100 units lattice
+     
+        read_data Si_1010100.csv
+         
+    group allatoms type 1
+    group centeratoms1 region 3
+    variable Nn equal count(all,todump)
+    mass 1 28.0
+    pair_style tersoff 
+    pair_coeff * * Si.tersoff  Si
+    neighbor 0.5 bin
+    neigh_modify every 1 delay 1 check yes 
+     
+    thermo 10
+    thermo_modify lost ignore flush yes
+    velocity allatoms create 300 12345
+    fix 2 all nve
+    fix 3 all ave/time 1 1 1 v_Nn file outputs/NPs_flux_output300nm10Jcm21000fs0por10nmsize
+    compute coord all coord/atom cutoff 2.6
+     
+    dump  8  all  movie  2  outputs/3d300nm10Jcm21000fs0por10nmsize.mpg  c_coord  type  zoom  1.0  adiam  2.2  axes  yes  0.8  0.02  view  60  -30  size  2048  2048
+    dump  9  all  movie  2  outputs/flat300nm10Jcm21000fs0por10nmsize.mpg  c_coord  type  zoom  1.6  adiam  2.2  axes  yes  0.8  0.02  view  90  0  size  2048  2048
+    dump  12  all  movie  2 outputs/slice300nm10Jcm21000fs0por10nmsize.mpg  c_coord  type  zoom  1.0  adiam  2.2  axes  yes  0.8  0.02  view  60  -30  size  2048  2048
+    dump  13  all  movie  2 outputs/flatslice300nm10Jcm21000fs0por10nmsize.mpg  c_coord  type  zoom  1.6  adiam  2.2  axes  yes  0.8  0.02  view  90  0  size  2048  2048
+
+    dump_modify 8 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green
+    dump_modify 9 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green
+    dump_modify 12 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green region centerslice
+    dump_modify 13 amap 1 6 cf 0.0 3 min blue 0.6 yellow max green region centerslice
+    run 100 
+    variable heatsource atom ((1730000.0*1.73e+19/(1748703.628388001*exp(0.173*(5.43*50-z))-18703.628388000983)+1.8703628388000984e-09*1.73e+19/(1748703.628388001*exp(0.173*(5.43*50-z))-18703.628388000983)*1.73e+19/(1748703.628388001*exp(0.173*(5.43*50-z))-18703.628388000983)))*1.1*10e-16
+    fix 4 allatoms heat 1 v_heatsource region 3
+    run 1000
+    unfix 4
+    run 100
