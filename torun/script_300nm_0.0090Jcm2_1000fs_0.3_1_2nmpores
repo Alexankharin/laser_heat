@@ -1,0 +1,224 @@
+
+    units metal
+    atom_style atomic
+    atom_modify map array
+    dimension       3
+    boundary        p p f
+     
+    lattice  diamond 5.43
+    region 1 block 0 10 0 10 1 50 units lattice
+    region 3 block 0 10 0 10 1 50 units lattice
+    region centerslice block 3 5 0 10 1 100 units lattice
+    region todump block 0 10 0 10 51 100 units lattice
+    
+    
+    region l2 block 0 50 0 50 48 51 units lattice
+    
+    region l4 block 0 50 0 50 46 49 units lattice
+    
+    region l6 block 0 50 0 50 44 47 units lattice
+    
+    region l8 block 0 50 0 50 42 45 units lattice
+    
+    region l10 block 0 50 0 50 40 43 units lattice
+    
+    region l12 block 0 50 0 50 38 41 units lattice
+    
+    region l14 block 0 50 0 50 36 39 units lattice
+    
+    region l16 block 0 50 0 50 34 37 units lattice
+    
+    region l18 block 0 50 0 50 32 35 units lattice
+    
+    region l20 block 0 50 0 50 30 33 units lattice
+    
+    region l22 block 0 50 0 50 28 31 units lattice
+    
+    region l24 block 0 50 0 50 26 29 units lattice
+    
+    region l26 block 0 50 0 50 24 27 units lattice
+    
+    region l28 block 0 50 0 50 22 25 units lattice
+    
+    region l30 block 0 50 0 50 20 23 units lattice
+    
+    region l32 block 0 50 0 50 18 21 units lattice
+    
+    region l34 block 0 50 0 50 16 19 units lattice
+    
+    region l36 block 0 50 0 50 14 17 units lattice
+    
+    region l38 block 0 50 0 50 12 15 units lattice
+    
+    region l40 block 0 50 0 50 10 13 units lattice
+    
+    region l42 block 0 50 0 50 8 11 units lattice
+    
+    region l44 block 0 50 0 50 6 9 units lattice
+    
+    region l46 block 0 50 0 50 4 7 units lattice
+    
+    region l48 block 0 50 0 50 2 5 units lattice
+     
+        read_data silicon1_2nmpores0.3.csv
+        
+    group layeratoms2 region l2
+    
+    group layeratoms4 region l4
+    
+    group layeratoms6 region l6
+    
+    group layeratoms8 region l8
+    
+    group layeratoms10 region l10
+    
+    group layeratoms12 region l12
+    
+    group layeratoms14 region l14
+    
+    group layeratoms16 region l16
+    
+    group layeratoms18 region l18
+    
+    group layeratoms20 region l20
+    
+    group layeratoms22 region l22
+    
+    group layeratoms24 region l24
+    
+    group layeratoms26 region l26
+    
+    group layeratoms28 region l28
+    
+    group layeratoms30 region l30
+    
+    group layeratoms32 region l32
+    
+    group layeratoms34 region l34
+    
+    group layeratoms36 region l36
+    
+    group layeratoms38 region l38
+    
+    group layeratoms40 region l40
+    
+    group layeratoms42 region l42
+    
+    group layeratoms44 region l44
+    
+    group layeratoms46 region l46
+    
+    group layeratoms48 region l48
+     
+    group allatoms type 1
+    group centeratoms1 region 3
+    variable Nn equal count(all,todump)
+    mass 1 28.0
+    pair_style tersoff 
+    pair_coeff * * Si.tersoff  Si
+    neighbor 0.5 bin
+    neigh_modify every 1 delay 1 check yes 
+     
+    thermo 10
+    thermo_modify lost ignore flush yes
+    velocity allatoms create 300 12345
+    fix 2 all nve
+    fix 3 all ave/time 1 1 1 v_Nn file outputs/NPs_1_2nmpores_flux_output300nm0.009Jcm21000fs0.3por10nmsize
+    compute coord all coord/atom cutoff 2.6
+    run 100
+    fix 102 layeratoms2 temp/rescale 1 9670 9670 0.05 1.0
+    
+    fix 104 layeratoms4 temp/rescale 1 7590 7590 0.05 1.0
+    
+    fix 106 layeratoms6 temp/rescale 1 5957 5957 0.05 1.0
+    
+    fix 108 layeratoms8 temp/rescale 1 4676 4676 0.05 1.0
+    
+    fix 110 layeratoms10 temp/rescale 1 3670 3670 0.05 1.0
+    
+    fix 112 layeratoms12 temp/rescale 1 2880 2880 0.05 1.0
+    
+    fix 114 layeratoms14 temp/rescale 1 2261 2261 0.05 1.0
+    
+    fix 116 layeratoms16 temp/rescale 1 1774 1774 0.05 1.0
+    
+    fix 118 layeratoms18 temp/rescale 1 1393 1393 0.05 1.0
+    
+    fix 120 layeratoms20 temp/rescale 1 1093 1093 0.05 1.0
+    
+    fix 122 layeratoms22 temp/rescale 1 858 858 0.05 1.0
+    
+    fix 124 layeratoms24 temp/rescale 1 673 673 0.05 1.0
+    
+    fix 126 layeratoms26 temp/rescale 1 528 528 0.05 1.0
+    
+    fix 128 layeratoms28 temp/rescale 1 414 414 0.05 1.0
+    
+    fix 130 layeratoms30 temp/rescale 1 325 325 0.05 1.0
+    
+    fix 132 layeratoms32 temp/rescale 1 255 255 0.05 1.0
+    
+    fix 134 layeratoms34 temp/rescale 1 200 200 0.05 1.0
+    
+    fix 136 layeratoms36 temp/rescale 1 157 157 0.05 1.0
+    
+    fix 138 layeratoms38 temp/rescale 1 123 123 0.05 1.0
+    
+    fix 140 layeratoms40 temp/rescale 1 97 97 0.05 1.0
+    
+    fix 142 layeratoms42 temp/rescale 1 76 76 0.05 1.0
+    
+    fix 144 layeratoms44 temp/rescale 1 59 59 0.05 1.0
+    
+    fix 146 layeratoms46 temp/rescale 1 46 46 0.05 1.0
+    
+    fix 148 layeratoms48 temp/rescale 1 36 36 0.05 1.0
+    run 3
+    unfix 102
+    
+    unfix 104
+    
+    unfix 106
+    
+    unfix 108
+    
+    unfix 110
+    
+    unfix 112
+    
+    unfix 114
+    
+    unfix 116
+    
+    unfix 118
+    
+    unfix 120
+    
+    unfix 122
+    
+    unfix 124
+    
+    unfix 126
+    
+    unfix 128
+    
+    unfix 130
+    
+    unfix 132
+    
+    unfix 134
+    
+    unfix 136
+    
+    unfix 138
+    
+    unfix 140
+    
+    unfix 142
+    
+    unfix 144
+    
+    unfix 146
+    
+    unfix 148
+    run 1000
